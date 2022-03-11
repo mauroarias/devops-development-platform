@@ -1,0 +1,5 @@
+@Library("template-jenkins-lib@__LIB_VERSION__") _
+
+__LIB_NAME__ {
+    
+}

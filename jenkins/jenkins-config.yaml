@@ -1,0 +1,41 @@
+jenkins:
+  numExecutors: 10
+unclassified:
+  globalLibraries:
+    libraries:
+    - defaultVersion: "master"
+      name: "template-jenkins-lib"
+      retriever:
+        modernSCM:
+          scm:
+            github:
+              configuredByUrl: true
+              repoOwner: "mauroarias"
+              repository: "template-jenkins-lib"
+              repositoryUrl: "https://github.com/mauroarias/template-jenkins-lib.git"
+              traits:
+              - gitHubBranchDiscovery:
+                  strategyId: 3
+              - gitHubPullRequestDiscovery:
+                  strategyId: 1
+              - gitHubForkDiscovery:
+                  strategyId: 1
+                  trust: "gitHubTrustPermissions"
+    - defaultVersion: "master"
+      name: "pipeline-jenkins-lib"
+      retriever:
+        modernSCM:
+          scm:
+            github:
+              configuredByUrl: true
+              repoOwner: "mauroarias"
+              repository: "pipeline-jenkins-lib"
+              repositoryUrl: "https://github.com/mauroarias/pipeline-jenkins-lib.git"
+              traits:
+              - gitHubBranchDiscovery:
+                  strategyId: 3
+              - gitHubPullRequestDiscovery:
+                  strategyId: 1
+              - gitHubForkDiscovery:
+                  strategyId: 1
+                  trust: "gitHubTrustPermissions"
