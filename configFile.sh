@@ -3,6 +3,9 @@
 CONCOURSE_CI=Concourse
 JENKINS_CI=jenkins
 
+SONAR_USER=admin
+SONAR_PASSWORD=passwd
+
 #ACTIVATE or DEACTIVATE
 minikubeOn=$DEACTIVATE
 istioOn=$DEACTIVATE

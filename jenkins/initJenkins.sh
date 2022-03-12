@@ -51,7 +51,7 @@ trigger_job_jenkins () {
 #****************************************
 
 MAX_WAIT_SEC=60
-LIB_VERSION=0.0.1
+LIB_VERSION=wip-0.1.0
 
 printAlert "BE SURE THAT YOUR JENKINS IMAGE WAS STOPPED..."
 

@@ -7,7 +7,9 @@ source ./configFile.sh
 printMessage "preparing docker compose file"
 echo -e "version: '3.3' \nservices:" > docker-compose.template
 tail -n +3 ./jenkins/docker-compose.template >> docker-compose.template
-echo -e "\n" >> docker-compose.template
+echo "     - SONAR_USER=$SONAR_USER" >>  docker-compose.template
+echo "     - SONAR_PASSWORD=$SONAR_PASSWORD" >>  docker-compose.template
+echo "" >> docker-compose.template
 tail -n +3 ./vault/docker-compose.yml >> docker-compose.template
 echo -e "\n" >> docker-compose.template
 tail -n +3 ./sonar/docker-compose.yml >> docker-compose.template
@@ -20,6 +22,8 @@ cat docker-compose.template | sed 's!../volumes!./volumes!g' | envsubst '${docke
 printMessage "stating Jenkins & wait for to be available"
 docker-compose up -d
 sleep 5
+
+autoUnseal "volumes"
 
 #minikube
 if [ $minikubeOn = $ACTIVATE ]

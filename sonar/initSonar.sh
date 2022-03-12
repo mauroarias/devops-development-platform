@@ -2,6 +2,8 @@
 
 source ../commonLibs.sh
 
+source ../configFile.sh
+
 #****************************************
 
 MAX_WAIT_SEC=60
@@ -16,7 +18,7 @@ printMessage "starting sonar container"
 docker-compose up -d
 counter=0
 
-while ! curl --silent --fail -u admin:admin -X POST "http://localhost:9000/api/users/change_password?login=admin&previousPassword=admin&password=passwd"; do
+while ! curl --silent --fail -u admin:admin -X POST "http://localhost:9000/api/users/change_password?login=$SONAR_USER&previousPassword=admin&password=$SONAR_PASSWORD"; do
 	sleep 1;
 	counter=$((counter+1))
 	echo "waiting for service up, counter $counter"
@@ -26,7 +28,7 @@ while ! curl --silent --fail -u admin:admin -X POST "http://localhost:9000/api/u
 	fi
 done
 
-curl --silent -u admin:passwd -X POST "http://localhost:9000/api/projects/create?name=default&project=default&visibility=public" || exitOnError "Error creating default project"
+curl --silent -u "$SONAR_USER:$SONAR_PASSWORD" -X POST "http://localhost:9000/api/projects/create?name=default&project=default&visibility=public" || exitOnError "Error creating default project"
 
 printMessage "stopping sonar container"
 docker-compose down
