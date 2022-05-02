@@ -6,8 +6,6 @@ source ../configFile.sh
 
 #****************************************
 
-MAX_WAIT_SEC=60
-
 printAlert "BE SURE THAT YOUR SONAR IMAGE WAS STOPPED..."
 
 printMessage "creating folder structure and clean up"
@@ -22,7 +20,7 @@ while ! curl --silent --fail -u admin:admin -X POST "http://localhost:9000/api/u
 	sleep 1;
 	counter=$((counter+1))
 	echo "waiting for service up, counter $counter"
-	if [ $counter -gt $MAX_WAIT_SEC ]
+	if [ $counter -gt $MAX_WAIT_SEC_SONAR ]
 	then
 		exitOnError "Error starting sonarqube server"
 	fi

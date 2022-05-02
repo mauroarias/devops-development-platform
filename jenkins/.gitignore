@@ -1,1 +1,3 @@
 docker-compose.yml
+jenkins-cli.jar
+credential.xml

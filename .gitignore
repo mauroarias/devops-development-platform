@@ -1,4 +1,5 @@
 docker-compose.yml
 docker-compose.template
+jenkins-cli.*
 logs.txt
 /volumes

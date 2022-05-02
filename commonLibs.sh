@@ -46,7 +46,6 @@ printMessageWithColor () {
 	echo "$2$1${reset}"
 }
 
-
 #setSingleSecret <path secret> <secret name> <value> 
 setSingleSecret () {
 	vault kv put secret/$1/$2 $2=$3
@@ -75,12 +74,88 @@ kubectl () {
 	minikube kubectl -- $1
 }
 
+traceOff () {
+	set +e
+}
+
+traceOn () {
+	set -e
+}
+
 parseJenkins () {
 	printMessage "parsing docker file"
 	docker_path=$(which docker)
 	maven_path=$(mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout | sed 's!/repository!!')
 	export docker_path=$docker_path
 	export maven_path=$maven_path
+}
+
+downloadJenkinsCli () {
+    counter=0
+    while true 
+    do 
+        wget 'http://localhost:8080/jnlpJars/jenkins-cli.jar'
+        wgetreturn=$?
+        if [[ $wgetreturn -ne 0 ]]
+        then
+            sleep 1
+            counter=$((counter+1))
+            echo "waiting for service up, counter $counter"
+            rm 
+            if [ $counter -gt $MAX_WAIT_SEC_JENKINS ]
+            then
+                exitOnError "Error starting sonarqube server"
+            fi
+        else
+            break
+        fi
+    done
+}
+
+waitSonarQubeUp () {
+	counter=0
+	while ! curl --silent --fail -H 'Content-Type: application/json' -u "$SONAR_USER:$SONAR_PASSWORD" -X GET "http://localhost:9000/api/user_tokens/search"; do
+		sleep 1;
+		counter=$((counter+1))
+		echo "waiting for sonarqube up, counter $counter"
+		if [ $counter -gt $MAX_WAIT_SEC_SONAR ]
+		then
+			exitOnError "Error starting sonarqube server"
+		fi
+	done
+}
+
+generateRandom () {
+	size=$1
+	cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c $size
+}
+
+createUserPassCred () {
+    printMessage "create $name credential"
+    traceOff
+    name=$1
+    user=$2
+    password=$3
+	path=$4
+    cat ${path}templating/credential_userpass_template.xml | sed "s|__NAME__|$name|g; s|__USER__|$user|g; s|__PASSWORD__|$password|g" > credential.xml
+    createCred
+    traceOn
+}
+
+createTextCred () {
+    printMessage "create $name credential"
+    traceOff
+    name=$1
+    secret=$2
+	path=$3
+    cat ${path}templating/credential_text_template.xml | sed "s|__NAME__|$name|g; s|__SECRET__|$secret|g" > credential.xml
+    createCred
+    traceOn
+}
+
+createCred () {
+    java -jar jenkins-cli.jar -s http://localhost:8080/ -webSocket create-credentials-by-xml system::system::jenkins _ < credential.xml
+    rm credential.xml
 }
 
 #-------------------------------------------

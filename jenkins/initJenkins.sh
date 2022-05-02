@@ -4,29 +4,7 @@ source ../commonLibs.sh
 
 #****************************************
 
-download_jenkins_cli () {
-    counter=0
-    while true 
-    do 
-        wget 'http://localhost:8080/jnlpJars/jenkins-cli.jar'
-        wgetreturn=$?
-        if [[ $wgetreturn -ne 0 ]]
-        then
-            sleep 1
-            counter=$((counter+1))
-            echo "waiting for service up, counter $counter"
-            rm 
-            if [ $counter -gt $MAX_WAIT_SEC ]
-            then
-                exitOnError "Error starting sonarqube server"
-            fi
-        else
-            break
-        fi
-    done
-}
-
-create_job_jenkins () {
+createJobJenkins () {
     CONFIG_FILE_NAME='./config.xml'
     CONFIG_TEMPLATE_FILE='templating/configFileCreateJobTemplate.xml'
     PIPELINE_TEMPLATE_FILE='./templating/JenkinsfileLibTemplate'
@@ -43,15 +21,14 @@ create_job_jenkins () {
     rm "$CONFIG_FILE_NAME"
 }
 
-trigger_job_jenkins () {
+triggerJobJenkins () {
     JOB_NAME="$1"
     java -jar jenkins-cli.jar -s http://localhost:8080/ -webSocket build "$JOB_NAME" -s
 }
 
 #****************************************
 
-MAX_WAIT_SEC=60
-LIB_VERSION=wip-0.1.0
+LIB_VERSION=0.1.0
 
 printAlert "BE SURE THAT YOUR JENKINS IMAGE WAS STOPPED..."
 
@@ -65,27 +42,33 @@ docker build --no-cache -t jenkins:local . || exitOnError "error building image"
 
 rm docker-compose.yml
 parseJenkins
-cat docker-compose.template | envsubst '${docker_path} ${maven_path} ${GIT_HUB_TOKEN} ${GIT_HUB_USER} ${GIT_HUB_ORGANIZATION} ${GIT_EMAIL} ${GIT_USER} ${BITBUCKET_PASSWD} ${BITBUCKET_USER}'  > docker-compose.yml
+cat docker-compose.template | envsubst '${docker_path} ${maven_path} {GIT_HUB_ORGANIZATION} {GIT_EMAIL} {GIT_USER}'  > docker-compose.yml
 
 printMessage "stating Jenkins & wait for to be available"
 docker-compose up -d
 
-download_jenkins_cli
+downloadJenkinsCli
 
 printMessage "applying config"
-java -jar jenkins-cli.jar -s http://localhost:8080/ -webSocket apply-configuration < ./jenkins-config.yaml
+java -jar jenkins-cli.jar -s http://localhost:8080/ -webSocket apply-configuration < config/jenkins-config.yaml
+
+createUserPassCred 'github-credentials' $GIT_HUB_USER $GIT_HUB_TOKEN './'
+createUserPassCred 'bitbucket-credentials' $BITBUCKET_USER $BITBUCKET_PASSWD './'
+createUserPassCred 'vault-credentials' $VAULT_USER $VAULT_PASSWORD './'
+createUserPassCred 'sonar-credentials' $SONAR_USER $SONAR_PASSWORD './'
+createTextCred 'vault-addr' $VAULT_ADDR './'
 
 printMessage "creating jobs"
-create_job_jenkins 'create-service' 'templateCreateJob'
-create_job_jenkins 'create-ci-job' 'templateCreateCi'
-create_job_jenkins 'create-cd-job' 'templateCreateCd'
-create_job_jenkins 'create-ci-cd-jobs' 'templateCreateCiCd'
+createJobJenkins 'create-service' 'templateCreateJob'
+createJobJenkins 'create-ci-job' 'templateCreateCi'
+createJobJenkins 'create-cd-job' 'templateCreateCd'
+createJobJenkins 'create-ci-cd-jobs' 'templateCreateCiCd'
 
 printMessage "initializing jobs"
-trigger_job_jenkins 'create-service' 
-trigger_job_jenkins 'create-ci-job'
-trigger_job_jenkins 'create-cd-job'
-trigger_job_jenkins 'create-ci-cd-jobs'
+triggerJobJenkins 'create-service' 
+triggerJobJenkins 'create-ci-job'
+triggerJobJenkins 'create-cd-job'
+triggerJobJenkins 'create-ci-cd-jobs'
 
 docker-compose down
 

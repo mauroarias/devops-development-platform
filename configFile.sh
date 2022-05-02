@@ -7,7 +7,10 @@ SONAR_USER=admin
 SONAR_PASSWORD=passwd
 
 #ACTIVATE or DEACTIVATE
-minikubeOn=$DEACTIVATE
+minikubeOn=$ACTIVATE
 istioOn=$DEACTIVATE
 #CONCOURSE_CI or JENKINS_CI ..... concourse is not supported yt
 ci=$JENKINS_CI
+
+MAX_WAIT_SEC_JENKINS=60
+MAX_WAIT_SEC_SONAR=60

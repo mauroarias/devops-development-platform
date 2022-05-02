@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source ../commonLibs.sh
+source ../configFile.sh
 
 #****************************************
 
@@ -25,8 +26,20 @@ vault status -format=json
 vault login $(cat ../volumes/vault/unseal/vault.keys | grep "Initial Root Token: " | awk '{print $4}')
 
 printMessage "Enable the secret kv engine"
+
 export VAULT_ADDR='http://127.0.0.1:8200'
 vault secrets enable -version=1 -path=secret kv
+
+printMessage "Adding user & policy"
+cat config/admin-policy.hcl | vault policy write my-policy -
+vault auth enable userpass
+vault token create -format=json -policy=my-policy
+vault write auth/userpass/users/$VAULT_USER password=$VAULT_PASSWORD policies=my-policy
+
+vault kv put secret/infra/git email=$GIT_EMAIL user=$GIT_USER
+vault kv put secret/infra/gitHub token=$GIT_HUB_TOKEN user=$GIT_HUB_USER oganization=$GIT_HUB_ORGANIZATION
+vault kv put secret/infra/bitbucket password=$BITBUCKET_PASSWD user=$BITBUCKET_USER
+vault kv put secret/infra/sonar password=$SONAR_PASSWORD user=$SONAR_USER
 
 docker-compose down
 
