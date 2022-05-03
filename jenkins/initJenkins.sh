@@ -28,7 +28,7 @@ triggerJobJenkins () {
 
 #****************************************
 
-LIB_VERSION=0.1.0
+LIB_VERSION=wip-0.2.0
 
 printAlert "BE SURE THAT YOUR JENKINS IMAGE WAS STOPPED..."
 
