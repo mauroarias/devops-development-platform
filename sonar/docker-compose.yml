@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+  sonarqube:
+    image: sonarqube
+    privileged: true
+    user: root
+    ports:
+     - 9000:9000
+     - 9092:9092
+    container_name: sonarqube
+    environment:
+     - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
+    volumes:
+     - ../volumes/sonar/sonarqube-conf:/opt/sonarqube/conf
+     - ../volumes/sonar/sonarqube-data:/opt/sonarqube/data
+     - ../volumes/sonar/sonarqube-logs:/opt/sonarqube/logs
+     - ../volumes/sonar/sonarqube-extensions:/opt/sonarqube/extensions

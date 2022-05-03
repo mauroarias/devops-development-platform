@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+  jenkins:
+    image: jenkins:local
+    privileged: true
+    user: root
+    ports:
+     - 8080:8080
+     - 50000:50000
+    container_name: jenkins
+    volumes:
+     - ../volumes/jenkins/config:/var/jenkins_home
+     - /usr/bin/docker:/usr/bin/docker
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /home/marias/.m2:/root/.m2
+    environment:
+     - JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF-8"
+     - LANG=en_US.UTF-8
+     - GIT_HUB_ORGANIZATION=${GIT_HUB_ORGANIZATION}
+     - GIT_EMAIL=${GIT_EMAIL}
+     - GIT_USER=${GIT_USER}
