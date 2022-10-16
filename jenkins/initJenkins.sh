@@ -28,8 +28,6 @@ triggerJobJenkins () {
 
 #****************************************
 
-LIB_VERSION=wip-0.2.0
-
 printAlert "BE SURE THAT YOUR JENKINS IMAGE WAS STOPPED..."
 
 printMessage "creating folder structure and clean up"
@@ -56,6 +54,7 @@ createUserPassCred 'github-credentials' $GIT_HUB_USER $GIT_HUB_TOKEN './'
 createUserPassCred 'bitbucket-credentials' $BITBUCKET_USER $BITBUCKET_PASSWD './'
 createUserPassCred 'vault-credentials' $VAULT_USER $VAULT_PASSWORD './'
 createUserPassCred 'sonar-credentials' $SONAR_USER $SONAR_PASSWORD './'
+createUserPassCred 'registry-credentials' $registryUser $registryPassword './'
 createTextCred 'vault-addr' $VAULT_ADDR './'
 
 printMessage "creating jobs"

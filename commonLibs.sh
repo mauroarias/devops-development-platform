@@ -91,6 +91,7 @@ parseJenkins () {
 }
 
 downloadJenkinsCli () {
+	rm jenkins-cli.*
     counter=0
     while true 
     do 

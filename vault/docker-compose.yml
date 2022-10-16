@@ -3,9 +3,10 @@ services:
   vault:
     image: vault:local
     container_name: vault
+    platform: linux/amd64
+    restart: always
     ports:
       - "8200:8200"
-    restart: always
     volumes:
       - ../volumes/vault/logs:/vault/logs
       - ../volumes/vault/file:/vault/file

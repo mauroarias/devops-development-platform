@@ -2,6 +2,8 @@
 
 CONCOURSE_CI=Concourse
 JENKINS_CI=jenkins
+LOCAL_REGISTRY=localhost
+JFOG_REGISTRY=jfog
 
 SONAR_USER=admin
 SONAR_PASSWORD=passwd
@@ -9,8 +11,11 @@ SONAR_PASSWORD=passwd
 #ACTIVATE or DEACTIVATE
 minikubeOn=$ACTIVATE
 istioOn=$DEACTIVATE
-#CONCOURSE_CI or JENKINS_CI ..... concourse is not supported yt
+#CONCOURSE_CI or JENKINS_CI ..... concourse is not supported yet
 ci=$JENKINS_CI
+registry=$JFOG_REGISTRY
 
 MAX_WAIT_SEC_JENKINS=60
 MAX_WAIT_SEC_SONAR=60
+
+LIB_VERSION=wip-0.2.0

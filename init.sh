@@ -11,6 +11,30 @@ printTitleWithColor "initialising Vault" "${orange}"
 cd ./vault
 source ./initVault.sh
 
+#minikube
+if [ $minikubeOn = $ACTIVATE ]
+then
+	printTitleWithColor "initialising minikube" "${orange}"
+	cd ../minikube
+	source ./initMinikube.sh
+fi
+
+#registry
+if [ $registry = $LOCAL_REGISTRY ]
+then
+	printTitleWithColor "initialising registry" "${orange}"
+	cd ../registry
+	source ./initRegistry.sh
+	cd ..
+	registryUser=
+	registryPassword=
+elif [ $registry = $JFOG_REGISTRY ]
+then
+	printTitleWithColor "Jfrog registry configured" "${orange}"
+	registryUser=$JFROG_USER
+	registryPassword=$JFROG_PASSWORD
+fi
+
 #CI
 if [ $ci = $JENKINS_CI ]
 then
@@ -25,14 +49,6 @@ then
 #	source ./initConcourse.sh	
 fi
 
-#minikube
-if [ $minikubeOn = $ACTIVATE ]
-then
-	printTitleWithColor "initialising minikube" "${orange}"
-	cd ../minikube
-	source ./initMinikube.sh
-fi
-
 #Istio
 if [ $istioOn = $ACTIVATE ]
 then
@@ -45,11 +61,6 @@ fi
 printTitleWithColor "initialising sonarqube" "${orange}"
 cd ../sonar
 source ./initSonar.sh
-
-#registry
-printTitleWithColor "initialising registry" "${orange}"
-cd ../registry
-source ./initRegistry.sh
 
 cd ..
 echo "${green}init done... you are good!"
