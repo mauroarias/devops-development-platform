@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ../commonLibs.sh
-
 source ../configFile.sh
 
 #****************************************

@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source ../commonLibs.sh
+source ../../commonLibs.sh
+source ../../configFile.sh
 
 #****************************************
 
@@ -8,8 +9,8 @@ createJobJenkins () {
     CONFIG_FILE_NAME='./config.xml'
     CONFIG_TEMPLATE_FILE='templating/configFileCreateJobTemplate.xml'
     PIPELINE_TEMPLATE_FILE='./templating/JenkinsfileLibTemplate'
-    JOB_NAME="$1"
-    LIB_NAME="$2"
+    local JOB_NAME="$1"
+    local LIB_NAME="$2"
     echo "creating job $JOB_NAME"
     sed -n '/__PIPELINE__/q;p' "$CONFIG_TEMPLATE_FILE" > "$CONFIG_FILE_NAME"
     echo "<script>" >> "$CONFIG_FILE_NAME"
@@ -31,8 +32,8 @@ triggerJobJenkins () {
 printAlert "BE SURE THAT YOUR JENKINS IMAGE WAS STOPPED..."
 
 printMessage "creating folder structure and clean up"
-mkdir -p ../volumes/jenkins/config
-sudo rm -rf ../volumes/jenkins/config/*
+mkdir -p ../../volumes/jenkins/config
+sudo rm -rf ../../volumes/jenkins/config/*
 rm ./jenkins-cli.jar*
 
 printMessage "building docker image"

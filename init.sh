@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source ./commonLibs.sh
-
 source ./configFile.sh
 
 #****************************************
@@ -25,7 +24,6 @@ then
 	printTitleWithColor "initialising registry" "${orange}"
 	cd ../registry
 	source ./initRegistry.sh
-	cd ..
 	registryUser=
 	registryPassword=
 elif [ $registry = $JFOG_REGISTRY ]
@@ -36,17 +34,15 @@ then
 fi
 
 #CI
-if [ $ci = $JENKINS_CI ]
+if [ $ci = $JENKINS_VM ]
 then
 	#Jenkins
-	printTitleWithColor "initialising Jenkins" "${orange}"
-	cd ../jenkins
+	printTitleWithColor "initialising Jenkins VM" "${orange}"
+	cd ../jenkins/vm
 	source ./initJenkins.sh
-#elif [ $ci = $CONCOURSE_CI ]
-#then
-#	printTitleWithColor "initialising concourse" "${orange}"
-#	cd ../concourse
-#	source ./initConcourse.sh	
+elif [ $ci = $JENKINS_KUBERNETTES ]
+then
+	printTitleWithColor "initialising Jenkins Helm" "${orange}"
 fi
 
 #Istio

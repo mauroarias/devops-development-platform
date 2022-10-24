@@ -1,10 +1,10 @@
 FROM jenkins/jenkins:lts-jdk11
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 COPY docker/plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli -f /usr/share/jenkins/ref/plugins.txt
 USER root
 RUN apt-get update
-RUN apt-get install -y jq wget
+RUN apt-get install -y jq wget docker.io
 RUN apt-get clean
 RUN apt-get autoclean
 ARG VERSION=v4.20.2

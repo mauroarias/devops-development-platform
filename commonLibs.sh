@@ -82,6 +82,24 @@ traceOn () {
 	set -e
 }
 
+waitServerUp () {
+  	local uri=$1
+  	local service=$2
+  	local waitTimeSec=$3
+	local counter=0
+	echo ""
+	while ! curl --silent --fail -H 'Content-Type: application/json' -X GET "$uri"; do
+		sleep 1;
+		counter=$((counter+1))
+		echo "waiting for $service up, counter $counter"
+		if [ $counter -gt $waitTimeSec ]
+		then
+			exitOnError "Error starting $service"
+		fi
+	done
+  	echo ""
+}
+
 parseJenkins () {
 	printMessage "parsing docker file"
 	docker_path=$(which docker)
@@ -92,11 +110,11 @@ parseJenkins () {
 
 downloadJenkinsCli () {
 	rm jenkins-cli.*
-    counter=0
+    local counter=0
     while true 
     do 
         wget 'http://localhost:8080/jnlpJars/jenkins-cli.jar'
-        wgetreturn=$?
+        local wgetreturn=$?
         if [[ $wgetreturn -ne 0 ]]
         then
             sleep 1
@@ -114,7 +132,7 @@ downloadJenkinsCli () {
 }
 
 waitSonarQubeUp () {
-	counter=0
+	local counter=0
 	while ! curl --silent --fail -H 'Content-Type: application/json' -u "$SONAR_USER:$SONAR_PASSWORD" -X GET "http://localhost:9000/api/user_tokens/search"; do
 		sleep 1;
 		counter=$((counter+1))
@@ -127,17 +145,17 @@ waitSonarQubeUp () {
 }
 
 generateRandom () {
-	size=$1
+	local size=$1
 	cat /proc/sys/kernel/random/uuid | sed 's/[-]//g' | head -c $size
 }
 
 createUserPassCred () {
     printMessage "create $name credential"
     traceOff
-    name=$1
-    user=$2
-    password=$3
-	path=$4
+    local name=$1
+    local user=$2
+    local password=$3
+	local path=$4
     cat ${path}templating/credential_userpass_template.xml | sed "s|__NAME__|$name|g; s|__USER__|$user|g; s|__PASSWORD__|$password|g" > credential.xml
     createCred
     traceOn
@@ -146,9 +164,9 @@ createUserPassCred () {
 createTextCred () {
     printMessage "create $name credential"
     traceOff
-    name=$1
-    secret=$2
-	path=$3
+    local name=$1
+    local secret=$2
+	local path=$3
     cat ${path}templating/credential_text_template.xml | sed "s|__NAME__|$name|g; s|__SECRET__|$secret|g" > credential.xml
     createCred
     traceOn

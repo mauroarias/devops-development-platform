@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CONCOURSE_CI=Concourse
-JENKINS_CI=jenkins
+JENKINS_KUBERNETTES=jenkinsKub
+JENKINS_VM=jenkinsVm
 LOCAL_REGISTRY=localhost
 JFOG_REGISTRY=jfog
 
@@ -11,8 +11,8 @@ SONAR_PASSWORD=passwd
 #ACTIVATE or DEACTIVATE
 minikubeOn=$ACTIVATE
 istioOn=$DEACTIVATE
-#CONCOURSE_CI or JENKINS_CI ..... concourse is not supported yet
-ci=$JENKINS_CI
+#JENKINS_VM or JENKINS_KUBERNETTES.....
+ci=$JENKINS_VM
 registry=$JFOG_REGISTRY
 
 MAX_WAIT_SEC_JENKINS=60

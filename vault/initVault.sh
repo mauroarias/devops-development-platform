@@ -19,7 +19,7 @@ docker build --no-cache -t vault:local . || exitOnError "error building image"
 
 printMessage "stating vault & wait for to be available"
 docker-compose up -d
-sleep 3
+waitServerUp "http://localhost:8200/v1/sys/health" "Vault" 20
 
 printMessage "Authenticating..."
 vault status -format=json
